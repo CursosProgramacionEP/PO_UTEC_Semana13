@@ -14,14 +14,14 @@ int main() {
     poligonos.push_back(new Paralelogramo(8, 5));
 
     cout << "Area" << endl;
-    for (auto i = 0; i < poligonos.size(); i++)
+    for (size_t i = 0; i < poligonos.size(); i++)
         cout << "Area es: " << poligonos[i]->calcularArea() << endl;
 
     cout << "\nDibujar" << endl;
-    for (auto i = 0; i < poligonos.size(); i++)
+    for (size_t i = 0; i < poligonos.size(); i++)
         poligonos[i]->dibujar();
 
-    for (auto i = 0; i < poligonos.size(); i++)
+    for (size_t i = 0; i < poligonos.size(); i++)
         delete poligonos[i];
     poligonos.clear();
 

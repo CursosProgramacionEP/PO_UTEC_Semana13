@@ -8,8 +8,9 @@ Elipse::Elipse(Number ejeMayor, Number ejeMenor) {
     this->ejeMenor = ejeMenor;
 }
 
+// El area usa los semiejes: la mitad de cada eje.
 Number Elipse::calcularArea() {
-    return PI * ejeMayor * ejeMenor;
+    return PI * (ejeMayor / 2) * (ejeMenor / 2);
 }
 
 void Elipse::dibujar() const {

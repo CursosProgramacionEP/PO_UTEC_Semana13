@@ -59,7 +59,7 @@ classDiagram
 
 ## La pregunta del enunciado: ¿qué relación se necesita?
 
-La diapositiva pregunta explícitamente qué relación hay entre `Persona` y `Documento`. Hay que decidir **dos cosas distintas**:
+El enunciado pregunta explícitamente qué relación hay entre `Persona` y `Documento`. Hay que decidir **dos cosas distintas**:
 
 **1. Punteros o valores.** Punteros, obligatoriamente. Un `vector<Documento>` ni siquiera compila: `Documento` es abstracta y el vector necesitaría construir uno para guardar la copia. Y aunque fuera concreta, la copia cortaría el objeto y perderíamos la ciudad, la huella o la categoría.
 

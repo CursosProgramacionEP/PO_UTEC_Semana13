@@ -10,9 +10,9 @@ Laboratorio de **Programación II (CS6003)**, Unidad 7: *Polimorfismo*. Resumen 
 | `A2_MascotaVeterinaria` | Perros y gatos administrados por una veterinaria | inclusión + agregación; impresión desde un método de clase |
 | `A3_EmpleadoConsultor` | Planilla con empleados por hora y consultores con salario fijo | `override` que **reutiliza** la versión de la superclase |
 | `A4_Documentos` | DNI, CEX, Pasaporte y Brevete dentro de una `Persona` | clase abstracta + composición |
-| `A5_Figuras` | Jerarquía de polígonos del diagrama de la diapositiva | interfaz (`AbstractPoligono`) + clase intermedia |
-| `B1_SobrecargaEjemplo` | `swap` sobrecargado y `operator+=` (ejemplo de la diapositiva) | sobrecarga de funciones y de operadores |
-| `B2_CastingEjemplo` | Conversiones implícitas y los cuatro casts (ejemplo de la diapositiva) | polimorfismo de coerción |
+| `A5_Figuras` | Jerarquía de polígonos con interfaz, clase intermedia y tres figuras | interfaz (`AbstractPoligono`) + clase intermedia |
+| `B1_SobrecargaEjemplo` | `swap` sobrecargado y `operator+=` de `Alumno` | sobrecarga de funciones y de operadores |
+| `B2_CastingEjemplo` | Conversiones implícitas y los cuatro operadores de casting | polimorfismo de coerción |
 | `B3_SumaSobrecargada` | Suma de enteros y de reales con un solo nombre de función | sobrecarga de parámetros |
 | `B4_AlumnosNotas` | Notas de Pre-Grado y Post-Grado con estadísticas del curso | integrador: abstracta + inclusión + composición |
 
@@ -40,7 +40,7 @@ La semana pasada se vio el caso con herencia: un `Alimento*` que apunta a una `V
 
 ## 2. La clasificación de Cardelli y Wegner
 
-La diapositiva 5 de la sesión 12B trae el cuadro clásico:
+El cuadro clásico de la clasificación:
 
 ```mermaid
 flowchart LR
@@ -192,7 +192,7 @@ entero x = (entero) 3.1415;   // explicita al estilo C
 entero y = static_cast<entero>(3.1415);   // explicita con nombre
 ```
 
-La escalera de promoción de la diapositiva 15:
+La escalera de promoción:
 
 ```
 bool -> char -> short int -> int -> unsigned int -> long -> unsigned -> long long -> float -> double -> long double
@@ -255,7 +255,7 @@ Se ve en la teoría de la sesión y se practica en los [ejercicios propuestos](E
 
 ---
 
-## 10. Miscelánea: preguntas que pueden caer en clase
+## 10. Miscelánea: preguntas frecuentes
 
 | Pregunta | Respuesta corta |
 |---|---|

@@ -7,7 +7,7 @@ Triangulo::Triangulo(Number base, Number altura) {
 }
 
 Number Triangulo::calcularArea() {
-    return base * altura;
+    return base * altura / 2;
 }
 
 void Triangulo::dibujar() const {

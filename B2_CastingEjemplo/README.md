@@ -1,8 +1,8 @@
 # B2 – Casting: polimorfismo de coerción (sesión 12B)
 
-> Ejemplo 2 de la sesión 12B (diapositivas 14 a 16): conversión implícita y explícita entre tipos, y los cuatro operadores de casting de C++.
+> Ejemplo 2 de la sesión 12B: conversión implícita y explícita entre tipos, y los cuatro operadores de casting de C++.
 
-Es el ejemplo del profesor, no un ejercicio. Cubre la cuarta rama del cuadro de clasificación: **ad-hoc → coercion**.
+Cubre la cuarta rama del cuadro de clasificación: **ad-hoc → coercion**.
 
 ## Las dos familias
 
@@ -21,7 +21,7 @@ bool -> char -> short int -> int -> unsigned int -> long -> unsigned -> long lon
 - **Hacia la derecha** (promoción): no se pierde nada. `char` → `int` es seguro.
 - **Hacia la izquierda** (truncamiento): se pierde información. `9.99` → `9`, y `65.5` → `65`.
 
-El caso que más cuesta en clase:
+El caso que más confunde:
 
 ```cpp
 entero codigo = 65;
@@ -83,10 +83,10 @@ Generico dice ... -> no es un gato
 
 ## Tareas
 
-- [ ] **1. `tipos.h`.** Los tres `using` de la diapositiva.
-- [ ] **2. Conversión implícita.** Reproduce las cuatro líneas de la diapositiva 16 e imprime cada resultado.
+- [ ] **1. `tipos.h`.** Los `using` de `entero`, `real` y `caracter`.
+- [ ] **2. Conversión implícita.** Asigna un entero a un real, un real con decimales a un entero y un `double` a un `long int`. Imprime cada resultado.
 - [ ] **3. División entera.** Comprueba la diferencia entre `codigo / 2` y `codigo / 2.0f`.
-- [ ] **4. `static_cast`.** Reescribe el casting estilo C de la diapositiva usando `static_cast`.
+- [ ] **4. `static_cast`.** Reescribe el casting estilo C `(entero) 3.1415` usando `static_cast`.
 - [ ] **5. `const_cast`.** Toma la dirección de un `const int` y léela por un puntero no `const`.
 - [ ] **6. `reinterpret_cast`.** Mira el primer byte de un `int` como `char`. *Pista: con 65 sale `'A'`.*
 - [ ] **7. Clases `Animal` y `Gato`.** `Animal` con `sonido()` virtual y destructor virtual; `Gato` con `ronronear()`, que solo existe en la subclase.
