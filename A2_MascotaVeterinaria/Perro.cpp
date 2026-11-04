@@ -2,10 +2,6 @@
 
 using namespace std;
 
-Perro::Perro() {
-    this->adiestrado = false;
-}
-
 Perro::Perro(const string& nombre, const string& vacuna, bool adiestrado)
         : Mascota(nombre, vacuna) {
     this->adiestrado = adiestrado;

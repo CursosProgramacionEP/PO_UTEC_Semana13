@@ -1,8 +1,7 @@
 #include "Binaria.h"
 
-Binaria::Binaria() : Estrella(0.0, true) {
-}
-
+// Simple no tiene constructor por defecto, asi que las dos componentes
+// se construyen obligatoriamente en la lista de inicializadores.
 Binaria::Binaria(double radio1, double radio2)
         : Estrella(0.0, true), primera(radio1), segunda(radio2) {
 }

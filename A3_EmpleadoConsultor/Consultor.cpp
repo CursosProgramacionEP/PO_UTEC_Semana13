@@ -2,11 +2,6 @@
 
 using namespace std;
 
-Consultor::Consultor() {
-    this->es_pagado = false;
-    this->fijo = 0.0;
-}
-
 // Consultor sin salario fijo: cobra por hora, como cualquier empleado.
 Consultor::Consultor(const string& nombre, double sph) : Empleado(nombre, sph) {
     this->es_pagado = false;

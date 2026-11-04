@@ -122,7 +122,7 @@ Fíjate en Marta: aunque es consultora, su salario sale de la fórmula del padre
 
 ## Tareas
 
-- [ ] **1. Clase `Empleado`.** Atributos `protected` `nombre` y `sph`, constructores y destructor **virtual**.
+- [ ] **1. Clase `Empleado`.** Atributos `protected` `nombre` y `sph`, un constructor con los dos y destructor **virtual**.
 - [ ] **2. `virtual double salario(double horas)`.** Devuelve `sph * horas`.
 - [ ] **3. `getNombre()`**, para que la plantilla pueda imprimirlo.
 - [ ] **4. Clase `Consultor`.** Hereda `public` y agrega `es_pagado` y `fijo`.

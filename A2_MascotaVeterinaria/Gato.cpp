@@ -2,9 +2,6 @@
 
 using namespace std;
 
-Gato::Gato() {
-}
-
 Gato::Gato(const string& nombre, const string& vacuna) : Mascota(nombre, vacuna) {
 }
 

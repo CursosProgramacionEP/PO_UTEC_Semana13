@@ -2,11 +2,6 @@
 
 using namespace std;
 
-Mascota::Mascota() {
-    this->nombre = "sin nombre";
-    this->vacuna = "";
-}
-
 Mascota::Mascota(const string& nombre, const string& vacuna) {
     this->nombre = nombre;
     this->vacuna = vacuna;

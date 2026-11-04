@@ -9,7 +9,6 @@ protected:
     double sph;          // salario por hora
 
 public:
-    Empleado();
     Empleado(const std::string& nombre, double sph);
     virtual ~Empleado();
 

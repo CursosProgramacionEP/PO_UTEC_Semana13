@@ -11,7 +11,6 @@ private:
     std::vector<Mascota*> mascotas;
 
 public:
-    Veterinaria();
     Veterinaria(const std::string& nombre);
 
     void agregar_mascota(Mascota* mascota);

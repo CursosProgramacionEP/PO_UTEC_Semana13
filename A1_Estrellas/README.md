@@ -47,6 +47,8 @@ virtual bool getFlag() = 0;
 
 Por eso `Estrella e;` no compila: una estrella que no es ni simple ni binaria no existe.
 
+**`Simple` y `Binaria` no tienen constructor por defecto.** Cada una se construye con sus datos y nada más. Eso obliga a `Binaria` a inicializar sus dos componentes en la lista de inicializadores: no hay forma de crearlas vacías y rellenarlas después.
+
 **`Binaria` hereda y además contiene.** Es el ejercicio donde conviven las dos relaciones:
 
 - *es una* estrella → `class Binaria : public Estrella`

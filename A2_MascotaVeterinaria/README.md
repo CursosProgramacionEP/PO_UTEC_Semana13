@@ -128,7 +128,7 @@ Boby esta entrenado
 
 ## Tareas
 
-- [ ] **1. Clase `Mascota`.** Atributos `protected` `nombre` y `vacuna`, constructores y destructor **virtual**.
+- [ ] **1. Clase `Mascota`.** Atributos `protected` `nombre` y `vacuna`, un constructor con los dos y destructor **virtual**.
 - [ ] **2. `getNombre()` y `getVacuna()`**, más `virtual bool vacunado()` con la regla genérica.
 - [ ] **3. Clase `Gato`.** Hereda `public` y sobrescribe `vacunado()` con la triple felina.
 - [ ] **4. Clase `Perro`.** Hereda `public`, sobrescribe `vacunado()` con la antirrábica y agrega `entrenado()`.

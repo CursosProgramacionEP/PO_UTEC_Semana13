@@ -4,10 +4,6 @@
 
 using namespace std;
 
-Veterinaria::Veterinaria() {
-    this->nombre = "sin nombre";
-}
-
 Veterinaria::Veterinaria(const string& nombre) {
     this->nombre = nombre;
 }

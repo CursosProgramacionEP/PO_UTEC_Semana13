@@ -11,7 +11,6 @@ private:
     Simple segunda;
 
 public:
-    Binaria();
     Binaria(double radio1, double radio2);
 
     bool getFlag() override;

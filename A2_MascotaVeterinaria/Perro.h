@@ -9,7 +9,6 @@ private:
     bool adiestrado;
 
 public:
-    Perro();
     Perro(const std::string& nombre, const std::string& vacuna, bool adiestrado);
 
     bool vacunado() override;

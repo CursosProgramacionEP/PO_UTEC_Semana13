@@ -10,7 +10,6 @@ private:
     double fijo;
 
 public:
-    Consultor();
     Consultor(const std::string& nombre, double sph);
     Consultor(const std::string& nombre, double sph, double fijo);
 

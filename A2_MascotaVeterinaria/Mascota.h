@@ -9,7 +9,6 @@ protected:
     std::string vacuna;
 
 public:
-    Mascota();
     Mascota(const std::string& nombre, const std::string& vacuna);
     virtual ~Mascota();
 
