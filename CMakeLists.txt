@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION 3.20)
+project(PO_UTEC_Semana13 LANGUAGES CXX)
+
+add_subdirectory(A1_Estrellas)
+add_subdirectory(A2_MascotaVeterinaria)
+add_subdirectory(A3_EmpleadoConsultor)
+add_subdirectory(A4_Documentos)
+add_subdirectory(A5_Figuras)
+add_subdirectory(B1_SobrecargaEjemplo)
+add_subdirectory(B2_CastingEjemplo)
+add_subdirectory(B3_SumaSobrecargada)
+add_subdirectory(B4_AlumnosNotas)

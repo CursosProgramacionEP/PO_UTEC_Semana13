@@ -300,4 +300,14 @@ Va como **función libre**, no como método, porque el operando de la izquierda 
 
 ## Compilación
 
-Cada carpeta es un proyecto CMake independiente (CLion). Ejecute siempre desde el botón ▶ del target del proyecto.
+Cada ejercicio tiene su propio `main.cpp` y sigue siendo un proyecto CMake independiente. También puede abrir el repositorio completo en CLion: el `CMakeLists.txt` de la raíz registra cada ejercicio como un ejecutable separado, sin combinar sus `main`.
+
+Para configurar todo el repositorio y compilar solo un ejercicio:
+
+```bash
+cmake -S . -B build
+cmake --build build --target A1_Estrellas
+./build/A1_Estrellas
+```
+
+Reemplace `A1_Estrellas` por el target que quiera ejecutar: `A2_MascotaVeterinaria`, `A3_EmpleadoConsultor`, `A4_Documentos`, `A5_Figuras`, `B1_SobrecargaEjemplo`, `B2_CastingEjemplo`, `B3_SumaSobrecargada` o `B4_AlumnosNotas`. En CLion, seleccione ese target en la lista de configuraciones de ejecución antes de presionar ▶. No ejecute `main.cpp` directamente: eso compila solo ese archivo y produce errores de símbolos indefinidos porque no enlaza los demás `.cpp` del ejercicio.
