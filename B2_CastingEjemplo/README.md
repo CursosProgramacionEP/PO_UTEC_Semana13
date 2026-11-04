@@ -38,24 +38,11 @@ La conversión ocurre al **asignar**, no al dividir. Si los dos operandos son en
 | `static_cast` | conversiones normales entre tipos relacionados | `static_cast<entero>(19.99)` |
 | `const_cast` | quitar (o poner) `const` | leer un `const int` por un puntero no const |
 | `reinterpret_cast` | leer los mismos bytes como otro tipo | el primer byte de `65` como `'A'` |
-| `dynamic_cast` | preguntar en ejecución de qué clase es un objeto | `dynamic_cast<Gato*>(animal)` |
+| `dynamic_cast` | preguntar en ejecución de qué clase es un objeto | no se usa aquí: exige una clase polimórfica |
 
 Los cuatro hacen lo que el casting estilo C `(tipo)valor` hacía de un solo golpe. La diferencia es que **se ven**: buscar `static_cast` en el código encuentra todas las conversiones, buscar `(int)` no.
 
-## `dynamic_cast`, el que conecta con el polimorfismo
-
-```cpp
-Gato* gato = dynamic_cast<Gato*>(animales[i]);
-if (gato != nullptr) {
-    gato->ronronear();      // metodo que solo existe en Gato
-}
-```
-
-- Es el `instanceof` de Java, pero devuelve `nullptr` en vez de lanzar excepción.
-- Necesita que la clase sea **polimórfica**: al menos una función virtual. Por eso `Animal` tiene `sonido()` virtual y destructor virtual.
-- Baja por la jerarquía (de la superclase a la subclase); subir no necesita cast.
-
-Y la advertencia de siempre: **usarlo suele ser señal de mal diseño**. Si el `main` tiene que preguntar de qué tipo es cada objeto, ese comportamiento debió estar dentro de una función virtual, como en A1 a A5. Aquí se usa solo para ver cómo funciona.
+`dynamic_cast` es el único de los cuatro que **verifica en ejecución**, y por eso exige una clase polimórfica: necesita al menos un método virtual para consultar el tipo real del objeto. Es el `instanceof` de Java, pero devuelve `nullptr` en vez de lanzar excepción. Se usa sobre jerarquías de herencia, como las de la sesión 12A.
 
 ## Preguntas de la sesión
 
@@ -71,14 +58,17 @@ Y la advertencia de siempre: **usarlo suele ser señal de mal diseño**. Si el `
 ## Ejecución
 
 ```
+--- 1. Conversion implicita y explicita ---
+entero a = 9.99    -> 9
+Velocidad          -> 65
+(entero) 3.1415    -> 3
+
 --- 2. La escalera de promocion ---
-letra 'A'          -> 65
 codigo / 2         -> 32  (division entera)
 codigo / 2.0f      -> 32.5
 
---- 6. dynamic_cast: preguntar de que clase es ---
-Michi dice Miau -> si era un gato: Michi ronronea
-Generico dice ... -> no es un gato
+--- 5. reinterpret_cast ---
+primer byte de 65 como caracter -> A
 ```
 
 ## Tareas
@@ -89,7 +79,4 @@ Generico dice ... -> no es un gato
 - [ ] **4. `static_cast`.** Reescribe el casting estilo C `(entero) 3.1415` usando `static_cast`.
 - [ ] **5. `const_cast`.** Toma la dirección de un `const int` y léela por un puntero no `const`.
 - [ ] **6. `reinterpret_cast`.** Mira el primer byte de un `int` como `char`. *Pista: con 65 sale `'A'`.*
-- [ ] **7. Clases `Animal` y `Gato`.** `Animal` con `sonido()` virtual y destructor virtual; `Gato` con `ronronear()`, que solo existe en la subclase.
-- [ ] **8. `dynamic_cast`.** Recorre un arreglo de `Animal*` y llama a `ronronear()` solo en los que sí son gatos.
-- [ ] **9. Comprobación.** Quita el `virtual` de `Animal::sonido()` y del destructor. ¿Qué dice el compilador sobre el `dynamic_cast`?
-- [ ] **10. Para pensar.** ¿Cómo se resolvería el punto 8 **sin** `dynamic_cast`? ¿Por qué sería mejor diseño?
+- [ ] **7. Para pensar.** ¿Por qué `dynamic_cast` no se puede probar con los tipos de este ejercicio? *Pista: mira qué exige de la clase.*
