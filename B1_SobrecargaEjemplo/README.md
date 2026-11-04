@@ -4,6 +4,28 @@
 
 Muestra las dos formas de **sobrecarga** antes de resolver el ejercicio de la sesión, que está en [B3_SumaSobrecargada](../B3_SumaSobrecargada).
 
+## Diagrama de clase
+
+```mermaid
+classDiagram
+    class Alumno {
+        -entero edad
+        +Alumno()
+        +Alumno(entero edad)
+        +getEdad() entero
+        +operator+=(Alumno alu) Alumno&
+    }
+    class swap {
+        <<function>>
+        +swap(entero& a, entero& b) void
+        +swap(real& a, real& b) void
+    }
+    note for swap "Sobrecarga de funciones"
+    note for Alumno "Sobrecarga de operadores"
+```
+
+Las dos cajas no se tocan: son las **dos formas de sobrecarga**, independientes entre sí. `swap` no es una clase — por eso lleva el estereotipo `<<function>>` — y aparece dos veces con la misma firma salvo por el tipo de los parámetros, que es justo lo que define la sobrecarga.
+
 ## Qué muestra
 
 | Parte | Qué sobrecarga | Dónde |
