@@ -1,38 +1,29 @@
 #include "Mascota.h"
-#include <iostream>
 
 using namespace std;
 
 Mascota::Mascota() {
     this->nombre = "sin nombre";
-    this->edad = 0;
-    this->peso = 0.0;
+    this->vacuna = "";
 }
 
-Mascota::Mascota(const string& nombre, int edad, double peso) {
+Mascota::Mascota(const string& nombre, const string& vacuna) {
     this->nombre = nombre;
-    this->edad = edad;
-    this->peso = peso;
+    this->vacuna = vacuna;
 }
 
 Mascota::~Mascota() {
 }
 
-string Mascota::get_nombre() const {
+string Mascota::getNombre() {
     return nombre;
 }
 
-string Mascota::especie() const {
-    return "Mascota";
+string Mascota::getVacuna() {
+    return vacuna;
 }
 
-string Mascota::sonido() const {
-    return "...";
-}
-
-void Mascota::mostrar() const {
-    cout << especie() << " | " << nombre
-         << " | edad: " << edad << " anios"
-         << " | peso: " << peso << " kg"
-         << " | dice: " << sonido() << endl;
+// En el caso generico basta con tener alguna vacuna registrada.
+bool Mascota::vacunado() {
+    return !vacuna.empty();
 }

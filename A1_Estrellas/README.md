@@ -2,108 +2,136 @@
 
 > Ejemplo 1 de la sesión 12A: *la mayoría de las estrellas en el cielo están en pares. Genere una clase `Estrella` y clases derivadas `Simple` y `Binaria`. Utilice polimorfismo (métodos virtuales) para generar un vector de estrellas con 5 simples y 5 binarias y una función genérica para imprimir sus datos.*
 
-Es el primer ejercicio de la unidad y el que fija la idea: **un solo bucle, un solo tipo de puntero, comportamientos distintos**.
-
 ## Diagrama de clase
 
 ```mermaid
 classDiagram
     class Estrella {
-        #string nombre
-        #double magnitud
-        #double distancia
+        <<abstract>>
+        #double radio
+        #bool esBinaria
         +Estrella()
-        +Estrella(string nombre, double magnitud, double distancia)
         +~Estrella()
-        +get_nombre() string
-        +tipo() string
-        +mostrar() void
+        +getFlag()* bool
     }
     class Simple {
-        -string clase_espectral
-        +Simple()
-        +Simple(string nombre, double magnitud, double distancia, string clase_espectral)
-        +tipo() string
-        +mostrar() void
+        +Simple(double radio)
+        +getFlag() bool
+        +getRadio() double
     }
     class Binaria {
-        -string companiera
-        -double separacion
-        -double periodo
-        +Binaria()
-        +Binaria(string nombre, double magnitud, double distancia, string companiera, double separacion, double periodo)
-        +tipo() string
-        +mostrar() void
+        -Simple primera
+        -Simple segunda
+        +Binaria(double radio1, double radio2)
+        +getFlag() bool
+        +getRadio1() double
+        +getRadio2() double
+    }
+    class imprimir_datos {
+        <<template>>
+        +imprimir_datos(T& F) void
     }
     Estrella <|-- Simple : Herencia
     Estrella <|-- Binaria : Herencia
+    Binaria *-- Simple : Composición
+    imprimir_datos ..> Estrella : usa
 ```
 
-## Dónde está el polimorfismo
+## Las tres piezas
 
-El vector es `vector<Estrella*>`: **punteros a la superclase**. Dentro hay objetos `Simple` y objetos `Binaria`, pero el vector no lo sabe.
+**`Estrella` es abstracta.** Su método `getFlag()` es **virtual puro** (`= 0`): no tiene cuerpo y cada subclase está obligada a implementarlo.
 
 ```cpp
-void imprimir_estrellas(const vector<Estrella*>& estrellas) {
-    for (size_t i = 0; i < estrellas.size(); i++) {
-        estrellas[i]->mostrar();     // la subclase responde
+virtual bool getFlag() = 0;
+```
+
+Por eso `Estrella e;` no compila: una estrella que no es ni simple ni binaria no existe.
+
+**`Binaria` hereda y además contiene.** Es el ejercicio donde conviven las dos relaciones:
+
+- *es una* estrella → `class Binaria : public Estrella`
+- *tiene* dos estrellas simples → dos atributos `Simple`
+
+```cpp
+class Binaria : public Estrella {
+private:
+    Simple primera;
+    Simple segunda;
+};
+```
+
+Los dos `Simple` son **por valor**, no punteros: nacen y mueren con la binaria. Eso es composición.
+
+**El flag dice qué hay dentro.** `esBinaria` es el dato que permite saber, desde un puntero a la base, cuántos radios tiene la estrella: uno o dos.
+
+## La función genérica
+
+El enunciado pide "una función genérica para imprimir sus datos", y se resuelve con una **plantilla**:
+
+```cpp
+template <typename T>
+void imprimir_datos(T& F) {
+    if (F.getFlag()) {
+        Binaria& b = static_cast<Binaria&>(F);
+        cout << "Binaria | radio 1: " << b.getRadio1() << " | radio 2: " << b.getRadio2();
+    } else {
+        Simple& s = static_cast<Simple&>(F);
+        cout << "Simple  | radio: " << s.getRadio();
     }
 }
 ```
 
-La función genérica **no tiene un solo `if`**. Quien decide qué código corre es la palabra `virtual` en `Estrella::mostrar()`, en tiempo de ejecución.
+`template <typename T>` escribe la función una sola vez con el tipo en blanco, y el compilador fabrica la versión que haga falta. Es **polimorfismo paramétrico**, otra de las cuatro ramas del cuadro de clasificación.
 
-| | Sin `virtual` | Con `virtual` |
-|---|---|---|
-| Qué se decide en compilación | la función, por el tipo del puntero | solo la firma |
-| Qué se decide en ejecución | nada | la versión, por el tipo real del objeto |
-| Qué imprimen las 10 estrellas | 10 veces la versión de `Estrella` | 5 veces `Simple` y 5 veces `Binaria` |
+Dentro hace falta el `getFlag()` porque los radios **no están en la superclase**: `getRadio()` solo existe en `Simple` y `getRadio1()/getRadio2()` solo en `Binaria`. El flag indica a qué tipo convertir antes de pedirlos.
 
-Este es el **polimorfismo de inclusión** (o de herencia) del cuadro de clasificación: la rama *universal → inclusion*.
+Las plantillas van **completas en el `.h`**, no se separan en `.h` y `.cpp` como las clases normales. Por eso `imprimir_datos.h` no tiene `.cpp`.
 
-## Reusar en vez de duplicar
-
-`Simple::mostrar()` y `Binaria::mostrar()` empiezan llamando a la versión de la superclase con el operador de resolución de ámbito:
+## El vector
 
 ```cpp
-void Simple::mostrar() const {
-    Estrella::mostrar();                                // nombre, magnitud, distancia
-    cout << " | clase espectral: " << clase_espectral << endl;
-}
+vector<Estrella*> cielo;
+cielo.push_back(new Simple(1.0));
+cielo.push_back(new Binaria(1.7, 0.9));
 ```
 
-Lo común se escribe una sola vez. Si mañana `Estrella` agrega un dato, las dos subclases lo imprimen sin tocarlas.
+Punteros, no objetos. Dos razones:
+
+1. `Estrella` es abstracta: un `vector<Estrella>` no compila, porque el vector necesitaría construir un `Estrella` para guardar cada copia.
+2. Aunque fuera concreta, la copia **cortaría** el objeto y perdería la parte derivada.
 
 ## Preguntas de la sesión
 
 | Pregunta | Respuesta |
 |---|---|
-| ¿Por qué el vector es de punteros y no de objetos? | Un `vector<Estrella>` cortaría el objeto: guardaría solo la parte `Estrella` |
-| ¿Por qué el destructor de `Estrella` es `virtual`? | Porque el `delete` se hace sobre un `Estrella*` y debe liberarse también la parte de la subclase |
-| ¿Qué pasa si quito `virtual` de `mostrar()`? | Las diez líneas salen iguales: siempre la versión de `Estrella` |
-| ¿`override` es obligatorio? | No, pero sin él un error de firma pasa desapercibido y se crea una función nueva |
-| ¿Por qué `mostrar()` es `const`? | No modifica la estrella; y así el vector puede recibirse por referencia constante |
-| ¿Hace falta un `if` por tipo en la función genérica? | No, y ese es justamente el punto del ejercicio |
+| ¿Por qué `Estrella` no se puede instanciar? | Porque `getFlag()` es virtual pura: la definición está incompleta |
+| ¿Por qué el vector es de punteros? | La clase es abstracta y además una copia cortaría el objeto |
+| ¿Por qué `Binaria` guarda `Simple` por valor y no por puntero? | Las dos componentes nacen y mueren con ella: es composición |
+| ¿Para qué sirve `esBinaria` si ya hay herencia? | Para saber, desde la base, cuántos radios pedir |
+| ¿Por qué la plantilla va entera en el `.h`? | El compilador necesita el cuerpo para generar cada versión |
+| ¿El destructor de `Estrella` por qué es virtual? | Porque el `delete` se hace sobre un `Estrella*` |
 
-## Diagrama de flujo – `imprimir_estrellas()`
+## Diagrama de flujo – `imprimir_datos(F)`
 
 ```mermaid
 flowchart TD
-    A([Inicio]) --> B["i = 0"]
-    B --> C{"i < estrellas.size()?"}
-    C -- Sí --> D["estrellas[i]->mostrar()"]
-    D --> E["i = i + 1"]
-    E --> C
-    C -- No --> F([Fin])
+    A([Inicio]) --> B{"F.getFlag()?"}
+    B -- Sí --> C["convertir F a Binaria&"]
+    C --> D[/"imprimir getRadio1() y getRadio2()"/]
+    B -- No --> E["convertir F a Simple&"]
+    E --> F[/"imprimir getRadio()"/]
+    D --> G([Fin])
+    F --> G
 ```
 
 ## Ejecución
 
 ```
 --- Catalogo de estrellas ---
-1. Simple | Sol | magnitud: -26.74 | distancia: 1.58e-05 al | clase espectral: G2
+1. Simple  | radio: 1
+2. Simple  | radio: 0.7
 ...
-6. Binaria | Sirio A | magnitud: -1.46 | distancia: 8.6 al | par: Sirio B | separacion: 20 ua | periodo: 50.1 anios
+6. Binaria | radio 1: 1.7 | radio 2: 0.9
 ...
 
 --- Total: 10 estrellas ---
@@ -111,13 +139,14 @@ flowchart TD
 
 ## Tareas
 
-- [ ] **1. Clase `Estrella`.** Atributos `protected` `nombre`, `magnitud` y `distancia`, con constructor vacío y con parámetros.
-- [ ] **2. Destructor virtual.** `virtual ~Estrella();` — se va a liberar por puntero a la superclase.
-- [ ] **3. `virtual string tipo()` y `virtual void mostrar()`.** La versión de la superclase imprime los tres datos comunes.
-- [ ] **4. Clase `Simple`.** Hereda `public` y agrega `clase_espectral`. El constructor pasa los datos comunes a `Estrella(...)` en la lista de inicializadores.
-- [ ] **5. Clase `Binaria`.** Hereda `public` y agrega `companiera`, `separacion` y `periodo`.
-- [ ] **6. `override` de `tipo()` y `mostrar()`** en las dos subclases. *Pista: llama primero a `Estrella::mostrar()`.*
-- [ ] **7. Función genérica.** `void imprimir_estrellas(const vector<Estrella*>&)`, fuera de las clases y **sin ningún `if` por tipo**.
-- [ ] **8. `main`.** Crea el `vector<Estrella*>` y mete 5 `Simple` y 5 `Binaria` con `new`.
-- [ ] **9. Liberación.** Recorre el vector haciendo `delete` de cada estrella.
-- [ ] **10. Comprobación.** Quita el `virtual` de `mostrar()`, vuelve a ejecutar y explica qué cambió y por qué.
+- [ ] **1. Clase `Estrella`.** Atributos `protected` `radio` y `esBinaria`, con constructor vacío y con parámetros.
+- [ ] **2. `virtual bool getFlag() = 0;`** Virtual **pura**: la clase queda abstracta. Comprueba que `Estrella e;` no compila.
+- [ ] **3. Destructor virtual.** Se va a liberar por puntero a la superclase.
+- [ ] **4. Clase `Simple`.** Hereda `public`, implementa `getFlag()` y agrega `getRadio()`. El constructor pasa el radio a `Estrella(...)` con el flag en `false`.
+- [ ] **5. Clase `Binaria`.** Hereda `public` y **contiene dos objetos `Simple`** por valor.
+- [ ] **6. `getRadio1()` y `getRadio2()`.** Devuelven el radio de cada componente. *Pista: pregúntaselo a cada `Simple`.*
+- [ ] **7. Plantilla `imprimir_datos`.** En su propio `.h`, completa, sin `.cpp`.
+- [ ] **8. El `if` del flag.** Usa `getFlag()` para decidir a qué tipo convertir antes de pedir los radios.
+- [ ] **9. `main`.** Crea el `vector<Estrella*>` con 5 `Simple` y 5 `Binaria`, y recórrelo llamando a la plantilla.
+- [ ] **10. Liberación.** `delete` de cada estrella.
+- [ ] **11. Para pensar.** ¿Qué habría que cambiar para que la plantilla no necesitara el `if` ni las conversiones?

@@ -1,22 +1,22 @@
 #ifndef BINARIA_H
 #define BINARIA_H
 
-#include <string>
 #include "Estrella.h"
+#include "Simple.h"
 
-class Binaria : public Estrella {   // "una estrella binaria ES UNA estrella"
+// Una binaria ES UNA estrella y ademas CONTIENE dos estrellas simples.
+class Binaria : public Estrella {
 private:
-    std::string companiera;
-    double separacion;    // unidades astronomicas
-    double periodo;       // anios
+    Simple primera;
+    Simple segunda;
 
 public:
     Binaria();
-    Binaria(const std::string& nombre, double magnitud, double distancia,
-            const std::string& companiera, double separacion, double periodo);
+    Binaria(double radio1, double radio2);
 
-    std::string tipo() const override;
-    void mostrar() const override;
+    bool getFlag() override;
+    double getRadio1();
+    double getRadio2();
 };
 
 #endif

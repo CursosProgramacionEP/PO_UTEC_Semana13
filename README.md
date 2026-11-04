@@ -6,7 +6,7 @@ Laboratorio de **Programación II (CS6003)**, Unidad 7: *Polimorfismo*. Resumen 
 
 | Carpeta | Ejercicio | Concepto que usa |
 |---------|-----------|------------------|
-| `A1_Estrellas` | Estrellas simples y binarias con una función genérica que las imprime | polimorfismo de inclusión: `virtual` + `vector<Estrella*>` |
+| `A1_Estrellas` | Estrellas simples y binarias, con una binaria que contiene dos simples | clase abstracta + composición + plantilla genérica |
 | `A2_MascotaVeterinaria` | Perros y gatos administrados por una veterinaria | inclusión + agregación; impresión desde un método de clase |
 | `A3_EmpleadoConsultor` | Planilla con empleados por hora y consultores con salario fijo | `override` que **reutiliza** la versión de la superclase |
 | `A4_Documentos` | DNI, CEX, Pasaporte y Brevete dentro de una `Persona` | clase abstracta + composición |
@@ -64,7 +64,7 @@ La diferencia entre las dos ramas:
 
 | Forma | Cuándo se decide | Palabra clave | Dónde se practica |
 |---|---|---|---|
-| **Paramétrico** | compilación | `template` | teoría; propuestos 7 y 8 |
+| **Paramétrico** | compilación | `template` | A1, A2, A3 (`imprimir_datos`); propuestos 7 y 8 |
 | **Inclusión** | **ejecución** | `virtual` | A1 a A5, B4 |
 | **Sobrecarga** | compilación | mismo nombre, otra firma | B1, B3, A3 |
 | **Coerción** | compilación | `static_cast` y familia | B2 |
@@ -236,7 +236,9 @@ Compare con B3, donde la misma idea se resuelve escribiendo una función por tip
 | Tipos que soporta | los que escribí | cualquiera que soporte las operaciones usadas |
 | Dónde falla el error | en la llamada | dentro de la plantilla, con mensajes largos |
 
-Se ve en la teoría de la sesión y se practica en los [ejercicios propuestos](EJERCICIOS_PROPUESTOS.md).
+En el laboratorio aparece como `imprimir_datos` en A1, A2 y A3: una sola plantilla que imprime los datos de cualquier objeto que sepa responder los métodos que ella usa. Se profundiza en los [ejercicios propuestos](EJERCICIOS_PROPUESTOS.md).
+
+Las plantillas van **completas en el `.h`**, no se separan en `.h` y `.cpp` como las clases normales: el compilador necesita el cuerpo para generar cada versión.
 
 ---
 

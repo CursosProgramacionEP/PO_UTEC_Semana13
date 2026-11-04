@@ -6,15 +6,14 @@
 
 class Perro : public Mascota {   // "un perro ES UNA mascota"
 private:
-    std::string raza;
+    bool adiestrado;
 
 public:
     Perro();
-    Perro(const std::string& nombre, int edad, double peso, const std::string& raza);
+    Perro(const std::string& nombre, const std::string& vacuna, bool adiestrado);
 
-    std::string especie() const override;
-    std::string sonido() const override;
-    void mostrar() const override;
+    bool vacunado() override;
+    bool entrenado();
 };
 
 #endif

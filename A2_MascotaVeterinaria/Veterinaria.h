@@ -8,19 +8,16 @@
 class Veterinaria {
 private:
     std::string nombre;
-    std::vector<Mascota*> pacientes;
+    std::vector<Mascota*> mascotas;
 
 public:
     Veterinaria();
     Veterinaria(const std::string& nombre);
 
-    void registrar(Mascota* mascota);
-    bool retirar(const std::string& nombre);
+    void agregar_mascota(Mascota* mascota);
 
-    // El enunciado pide imprimir desde un metodo de la clase, no desde una funcion externa.
-    void imprimir_pacientes() const;
-
-    int total_pacientes() const;
+    // El enunciado pide imprimir desde un metodo de clase, no desde el main.
+    void imprimir();
 };
 
 #endif

@@ -2,88 +2,104 @@
 
 > Ejemplo 3 de la sesión 12A: *genere una clase `Empleado` y una clase `Consultor` que derive de `Empleado`. Calcule el salario del empleado si tiene el salario por hora. El consultor puede o no tener salario fijo; calcule su salario en caso lo tenga. Imprima la lista de consultores y empleados.*
 
-El ejercicio agrega una vuelta de tuerca a lo de A1 y A2: la subclase no solo sobrescribe el método, también **reutiliza la versión del padre** cuando le conviene.
-
 ## Diagrama de clase
 
 ```mermaid
 classDiagram
     class Empleado {
-        #string codigo
         #string nombre
-        #double horas
-        #double salario_por_hora
-        +Empleado()
-        +Empleado(string codigo, string nombre, double horas, double salario_por_hora)
+        #double sph
+        +Empleado(string nombre, double sph)
         +~Empleado()
-        +get_codigo() string
-        +get_nombre() string
-        +tipo() string
-        +salario() double
-        +mostrar() void
+        +getNombre() string
+        +salario(double horas) double
     }
     class Consultor {
-        -bool tiene_salario_fijo
-        -double salario_fijo
-        -string especialidad
-        +Consultor(string codigo, string nombre, double horas, double salario_por_hora, string especialidad)
-        +Consultor(string codigo, string nombre, double horas, double salario_por_hora, string especialidad, double salario_fijo)
-        +get_tiene_salario_fijo() bool
-        +tipo() string
-        +salario() double
-        +mostrar() void
+        -bool es_pagado
+        -double fijo
+        +Consultor(string nombre, double sph)
+        +Consultor(string nombre, double sph, double fijo)
+        +getEsPagado() bool
+        +cambiar(bool es_pagado, double fijo) void
+        +salario(double horas) double
+    }
+    class imprimir_datos {
+        <<template>>
+        +imprimir_datos(T& F, double horas) void
     }
     Empleado <|-- Consultor : Herencia
+    imprimir_datos ..> Empleado : usa
 ```
+
+`sph` es el **salario por hora**, y `es_pagado` indica si el consultor tiene salario fijo pactado.
 
 ## Las dos reglas de sueldo
 
 | | Empleado | Consultor sin salario fijo | Consultor con salario fijo |
 |---|---|---|---|
-| Fórmula | `horas * salario_por_hora` | `horas * salario_por_hora` | `salario_fijo` |
+| Fórmula | `sph * horas` | `sph * horas` | el monto `fijo` |
 | Quién la implementa | `Empleado::salario()` | la hereda del padre | `Consultor::salario()` |
 
 ```cpp
-double Consultor::salario() const {
-    if (tiene_salario_fijo) {
-        return salario_fijo;
+double Consultor::salario(double horas) {
+    if (es_pagado) {
+        return fijo;
     }
-    return Empleado::salario();   // no se duplica la formula del padre
+    return Empleado::salario(horas);   // no se duplica la formula del padre
 }
 ```
 
-Ese `Empleado::salario()` es el **operador de resolución de ámbito**. Sin él, escribir otra vez `horas * salario_por_hora` dentro del consultor sería duplicar una regla que ya existe: el día que cambie la fórmula habría que corregirla en dos sitios.
+Ese `Empleado::salario(horas)` es el **operador de resolución de ámbito**. Sin él habría que volver a escribir `sph * horas` dentro del consultor, y el día que cambie la fórmula habría que corregirla en dos sitios.
 
 ## El "puede o no tener" del enunciado
 
-El consultor tiene dos constructores, y el que se use decide la regla de pago. Esto ya es **sobrecarga de funciones** — el polimorfismo *ad-hoc* que se ve a fondo en la sesión 12B — aplicada a constructores:
+Hay dos constructores, y el que uses decide la regla de pago:
 
 ```cpp
-Consultor marta("C001", "Marta Rios", 40, 60.00, "Base de datos");              // sin fijo
-Consultor jorge("C002", "Jorge Leon", 30, 55.00, "Redes", 4500.00);             // con fijo
+Consultor marta("Marta Rios", 60.00);                 // sin fijo: cobra por hora
+Consultor jorge("Jorge Leon", 55.00, 4500.00);        // con fijo
 ```
 
-El compilador elige por la **lista de parámetros**: cinco argumentos o seis.
+Eso ya es **sobrecarga de funciones** aplicada a constructores: el compilador elige por la lista de parámetros, dos argumentos o tres. Es el polimorfismo *ad-hoc* que se ve a fondo en la sesión 12B.
+
+Y `cambiar()` permite moverlo después de creado:
+
+```cpp
+marta.cambiar(true, 7000.00);   // ahora si tiene salario fijo
+```
+
+## La función genérica
+
+```cpp
+template <typename T>
+void imprimir_datos(T& F, double horas) {
+    cout << F.getNombre() << horas << F.salario(horas);
+}
+```
+
+Una sola plantilla imprime la fila de cualquier trabajador, sea empleado o consultor. Dentro no hay ningún `if` por tipo: `salario()` es virtual y cada objeto responde con su propia fórmula.
+
+Las plantillas van **completas en el `.h`**: `imprimir_datos.h` no tiene `.cpp`.
 
 ## Preguntas de la sesión
 
 | Pregunta | Respuesta |
 |---|---|
-| ¿Por qué el vector es `vector<Empleado*>`? | Para que la planilla tenga empleados y consultores mezclados en una sola lista |
-| ¿Cómo sabe el bucle qué fórmula usar? | No lo sabe: `salario()` es virtual y cada objeto responde la suya |
-| ¿Por qué `Consultor` llama a `Empleado::salario()`? | Para no repetir la fórmula por hora que ya está escrita en el padre |
-| ¿Qué pasa si olvido `virtual` en `salario()`? | El total de planilla se calcula con la fórmula del padre para todos |
+| ¿Por qué el vector es `vector<Empleado*>`? | Para tener empleados y consultores mezclados en una sola planilla |
+| ¿Cómo sabe la plantilla qué fórmula usar? | No lo sabe: `salario()` es virtual y cada objeto responde la suya |
+| ¿Por qué `Consultor` llama a `Empleado::salario()`? | Para no repetir la fórmula por hora que ya está en el padre |
+| ¿Qué pasa si olvido `virtual` en `salario()`? | Todos cobran con la fórmula del padre, y el consultor con fijo cobra de más |
 | ¿Dos constructores son polimorfismo? | Sí, sobrecarga: misma función, distinta lista de parámetros |
-| ¿Se podría usar un solo constructor? | Sí, con un parámetro por defecto, pero se pierde la lectura de "este no tiene fijo" |
+| ¿Para qué sirve `cambiar()`? | Para pasar un consultor de pago por hora a salario fijo sin recrearlo |
 
-## Diagrama de flujo – `Consultor::salario()`
+## Diagrama de flujo – `Consultor::salario(horas)`
 
 ```mermaid
 flowchart TD
-    A([Inicio]) --> B{"tiene_salario_fijo?"}
-    B -- Sí --> C[/"retornar salario_fijo"/]
-    B -- No --> D["Empleado::salario()"]
-    D --> E[/"retornar horas * salario_por_hora"/]
+    A([Inicio]) --> B{"es_pagado?"}
+    B -- Sí --> C[/"retornar fijo"/]
+    B -- No --> D["Empleado::salario(horas)"]
+    D --> E[/"retornar sph * horas"/]
     C --> F([Fin])
     E --> F
 ```
@@ -91,32 +107,29 @@ flowchart TD
 ## Ejecución
 
 ```
-TIPO      CODIGO  NOMBRE                   HORAS       TARIFA     SALARIO
--------------------------------------------------------------------------
-Empleado  E001    Ana Quispe            160.00 h     25.00 /h     4000.00
-Empleado  E002    Luis Torres           180.00 h     18.50 /h     3330.00
-Consultor C001    Marta Rios             40.00 h     60.00 /h     2400.00
-          especialidad: Base de datos | salario fijo: no
-Consultor C002    Jorge Leon             30.00 h     55.00 /h     4500.00
-          especialidad: Redes | salario fijo: si
-Consultor C003    Rosa Diaz              50.00 h     48.00 /h     6000.00
-          especialidad: Seguridad | salario fijo: si
--------------------------------------------------------------------------
-Total de la planilla: 20230.00
+NOMBRE               HORAS     SALARIO
+--------------------------------------
+Ana Quispe        160.00 h     4000.00
+Luis Torres       160.00 h     2960.00
+Marta Rios        160.00 h     9600.00
+Jorge Leon        160.00 h     4500.00
+
+--- Marta pasa a tener salario fijo ---
+Marta Rios        160.00 h     7000.00
 ```
 
-Fíjese en Marta: aunque es consultora, su salario sale de la fórmula del padre porque no tiene fijo.
+Fíjate en Marta: aunque es consultora, su salario sale de la fórmula del padre porque no tiene fijo. Tras `cambiar()`, cobra el monto pactado.
 
 ## Tareas
 
-- [ ] **1. Clase `Empleado`.** Atributos `protected` `codigo`, `nombre`, `horas` y `salario_por_hora`.
-- [ ] **2. Destructor virtual** y getters `const`.
-- [ ] **3. `virtual double salario() const`.** Devuelve `horas * salario_por_hora`.
-- [ ] **4. `virtual void mostrar() const`.** Imprime una fila de la planilla. *Pista: usa `<iomanip>` con `setw` y `setprecision(2)`.*
-- [ ] **5. Clase `Consultor`.** Hereda `public` y agrega `tiene_salario_fijo`, `salario_fijo` y `especialidad`.
-- [ ] **6. Dos constructores.** Uno sin salario fijo (pone el flag en `false`) y otro con salario fijo.
-- [ ] **7. `salario()` con `override`.** Si tiene fijo devuelve el fijo; si no, **llama a `Empleado::salario()`**.
-- [ ] **8. `mostrar()` con `override`.** Llama a `Empleado::mostrar()` y agrega la línea de especialidad.
-- [ ] **9. `main`.** Crea un `vector<Empleado*>` con empleados y consultores de los dos tipos.
-- [ ] **10. Total de planilla.** En el mismo bucle acumula `salario()` y muestra el total. Libera con `delete`.
-- [ ] **11. Comprobación.** Quita el `virtual` de `salario()` y explica por qué el total cambia.
+- [ ] **1. Clase `Empleado`.** Atributos `protected` `nombre` y `sph`, constructores y destructor **virtual**.
+- [ ] **2. `virtual double salario(double horas)`.** Devuelve `sph * horas`.
+- [ ] **3. `getNombre()`**, para que la plantilla pueda imprimirlo.
+- [ ] **4. Clase `Consultor`.** Hereda `public` y agrega `es_pagado` y `fijo`.
+- [ ] **5. Dos constructores.** Uno sin salario fijo (deja el flag en `false`) y otro con salario fijo.
+- [ ] **6. `salario()` con `override`.** Si tiene fijo devuelve el fijo; si no, **llama a `Empleado::salario(horas)`**.
+- [ ] **7. `cambiar(bool, double)`.** Cambia la condición de pago de un consultor ya creado.
+- [ ] **8. Plantilla `imprimir_datos`.** En su propio `.h`, recibe el trabajador y las horas.
+- [ ] **9. `main`.** Crea un `vector<Empleado*>` con empleados y consultores de los dos tipos, y recórrelo.
+- [ ] **10. Prueba `cambiar()`.** Convierte un consultor por horas en uno con salario fijo y vuelve a imprimirlo.
+- [ ] **11. Comprobación.** Quita el `virtual` de `salario()` y explica por qué cambia el sueldo de Jorge.

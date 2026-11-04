@@ -6,19 +6,18 @@
 class Mascota {
 protected:
     std::string nombre;
-    int edad;
-    double peso;
+    std::string vacuna;
 
 public:
     Mascota();
-    Mascota(const std::string& nombre, int edad, double peso);
+    Mascota(const std::string& nombre, const std::string& vacuna);
     virtual ~Mascota();
 
-    std::string get_nombre() const;
+    std::string getNombre();
+    std::string getVacuna();
 
-    virtual std::string especie() const;
-    virtual std::string sonido() const;
-    virtual void mostrar() const;
+    // Cada especie tiene su propia vacuna obligatoria.
+    virtual bool vacunado();
 };
 
 #endif

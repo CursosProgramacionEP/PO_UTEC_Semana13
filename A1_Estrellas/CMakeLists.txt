@@ -10,4 +10,5 @@ add_executable(A1_Estrellas main.cpp
         Simple.h
         Binaria.cpp
         Binaria.h
+        imprimir_datos.h
 )

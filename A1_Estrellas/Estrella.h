@@ -1,24 +1,19 @@
 #ifndef ESTRELLA_H
 #define ESTRELLA_H
 
-#include <string>
-
+// Clase abstracta: toda estrella sabe decir si es binaria o no,
+// pero "una estrella generica" no se puede instanciar.
 class Estrella {
 protected:
-    std::string nombre;
-    double magnitud;      // brillo aparente
-    double distancia;     // anios luz
+    double radio;
+    bool esBinaria;
 
 public:
     Estrella();
-    Estrella(const std::string& nombre, double magnitud, double distancia);
+    Estrella(double radio, bool esBinaria);
     virtual ~Estrella();
 
-    std::string get_nombre() const;
-
-    // Las dos funciones que cada subclase responde a su manera.
-    virtual std::string tipo() const;
-    virtual void mostrar() const;
+    virtual bool getFlag() = 0;
 };
 
 #endif

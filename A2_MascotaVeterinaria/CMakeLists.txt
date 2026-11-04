@@ -6,10 +6,11 @@ set(CMAKE_CXX_STANDARD 20)
 add_executable(A2_MascotaVeterinaria main.cpp
         Mascota.cpp
         Mascota.h
-        Perro.cpp
-        Perro.h
         Gato.cpp
         Gato.h
+        Perro.cpp
+        Perro.h
         Veterinaria.cpp
         Veterinaria.h
+        imprimir_datos.h
 )

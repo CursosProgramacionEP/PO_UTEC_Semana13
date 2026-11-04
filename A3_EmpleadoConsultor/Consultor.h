@@ -6,28 +6,20 @@
 
 class Consultor : public Empleado {   // "un consultor ES UN empleado"
 private:
-    bool tiene_salario_fijo;
-    double salario_fijo;
-    std::string especialidad;
+    bool es_pagado;      // indica si tiene salario fijo
+    double fijo;
 
 public:
     Consultor();
+    Consultor(const std::string& nombre, double sph);
+    Consultor(const std::string& nombre, double sph, double fijo);
 
-    // Consultor sin salario fijo: cobra por hora, como cualquier empleado.
-    Consultor(const std::string& codigo, const std::string& nombre,
-              double horas, double salario_por_hora,
-              const std::string& especialidad);
+    bool getEsPagado();
 
-    // Consultor con salario fijo: cobra el monto pactado.
-    Consultor(const std::string& codigo, const std::string& nombre,
-              double horas, double salario_por_hora,
-              const std::string& especialidad, double salario_fijo);
+    // Cambia la condicion de pago del consultor.
+    void cambiar(bool es_pagado, double fijo);
 
-    bool get_tiene_salario_fijo() const;
-
-    std::string tipo() const override;
-    double salario() const override;
-    void mostrar() const override;
+    double salario(double horas) override;
 };
 
 #endif

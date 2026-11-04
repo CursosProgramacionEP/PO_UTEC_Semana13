@@ -1,26 +1,22 @@
 #include "Perro.h"
-#include <iostream>
 
 using namespace std;
 
 Perro::Perro() {
-    this->raza = "mestizo";
+    this->adiestrado = false;
 }
 
-Perro::Perro(const string& nombre, int edad, double peso, const string& raza)
-        : Mascota(nombre, edad, peso) {
-    this->raza = raza;
+Perro::Perro(const string& nombre, const string& vacuna, bool adiestrado)
+        : Mascota(nombre, vacuna) {
+    this->adiestrado = adiestrado;
 }
 
-string Perro::especie() const {
-    return "Perro";
+// Un perro solo cuenta como vacunado con la antirrabica.
+bool Perro::vacunado() {
+    return vacuna == "antirrabica";
 }
 
-string Perro::sonido() const {
-    return "Guau";
-}
-
-void Perro::mostrar() const {
-    Mascota::mostrar();
-    cout << "    raza: " << raza << endl;
+// Metodo propio del perro: no existe en Mascota ni en Gato.
+bool Perro::entrenado() {
+    return adiestrado;
 }

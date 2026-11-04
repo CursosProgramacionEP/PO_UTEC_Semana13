@@ -8,4 +8,5 @@ add_executable(A3_EmpleadoConsultor main.cpp
         Empleado.h
         Consultor.cpp
         Consultor.h
+        imprimir_datos.h
 )

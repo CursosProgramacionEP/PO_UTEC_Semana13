@@ -5,23 +5,18 @@
 
 class Empleado {
 protected:
-    std::string codigo;
     std::string nombre;
-    double horas;              // horas trabajadas en el mes
-    double salario_por_hora;
+    double sph;          // salario por hora
 
 public:
     Empleado();
-    Empleado(const std::string& codigo, const std::string& nombre,
-             double horas, double salario_por_hora);
+    Empleado(const std::string& nombre, double sph);
     virtual ~Empleado();
 
-    std::string get_codigo() const;
-    std::string get_nombre() const;
+    std::string getNombre();
 
-    virtual std::string tipo() const;
-    virtual double salario() const;
-    virtual void mostrar() const;
+    // El empleado cobra por hora trabajada.
+    virtual double salario(double horas);
 };
 
 #endif

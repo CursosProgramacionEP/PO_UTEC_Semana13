@@ -5,16 +5,11 @@
 #include "Mascota.h"
 
 class Gato : public Mascota {   // "un gato ES UNA mascota"
-private:
-    bool pelo_largo;
-
 public:
     Gato();
-    Gato(const std::string& nombre, int edad, double peso, bool pelo_largo);
+    Gato(const std::string& nombre, const std::string& vacuna);
 
-    std::string especie() const override;
-    std::string sonido() const override;
-    void mostrar() const override;
+    bool vacunado() override;
 };
 
 #endif

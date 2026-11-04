@@ -2,138 +2,141 @@
 
 > Ejemplo 2 de la sesión 12A: *genere una clase `Mascota` y clases derivadas `Perro` y `Gato`. Cree un vector de perros y gatos y agréguelos a una clase `Veterinaria`. Imprima sus datos desde un método de clase (no externo).*
 
-Mismo polimorfismo que A1, pero con un cambio de diseño importante: la impresión **ya no es una función suelta**, está dentro de la clase que administra la colección.
-
 ## Diagrama de clase
 
 ```mermaid
 classDiagram
     class Mascota {
         #string nombre
-        #int edad
-        #double peso
-        +Mascota()
-        +Mascota(string nombre, int edad, double peso)
+        #string vacuna
+        +Mascota(string nombre, string vacuna)
         +~Mascota()
-        +get_nombre() string
-        +especie() string
-        +sonido() string
-        +mostrar() void
-    }
-    class Perro {
-        -string raza
-        +especie() string
-        +sonido() string
-        +mostrar() void
+        +getNombre() string
+        +getVacuna() string
+        +vacunado() bool
     }
     class Gato {
-        -bool pelo_largo
-        +especie() string
-        +sonido() string
-        +mostrar() void
+        +Gato(string nombre, string vacuna)
+        +vacunado() bool
+    }
+    class Perro {
+        -bool adiestrado
+        +Perro(string nombre, string vacuna, bool adiestrado)
+        +vacunado() bool
+        +entrenado() bool
     }
     class Veterinaria {
         -string nombre
-        -vector~Mascota#42;~ pacientes
+        -vector~Mascota#42;~ mascotas
         +Veterinaria(string nombre)
-        +registrar(Mascota#42; mascota) void
-        +retirar(string nombre) bool
-        +imprimir_pacientes() void
-        +total_pacientes() int
+        +agregar_mascota(Mascota#42; mascota) void
+        +imprimir() void
     }
-    Mascota <|-- Perro : Herencia
+    class imprimir_datos {
+        <<template>>
+        +imprimir_datos(T& F) void
+    }
     Mascota <|-- Gato : Herencia
+    Mascota <|-- Perro : Herencia
     Veterinaria o-- Mascota : Agregación
+    imprimir_datos ..> Mascota : usa
 ```
 
 ## Las dos relaciones del ejercicio
 
-En este ejercicio conviven las dos cosas que se vieron en las últimas dos semanas:
-
 | Relación | Entre quiénes | Cómo se ve en el código |
 |---|---|---|
 | **Herencia** ("es un") | `Perro`/`Gato` → `Mascota` | `class Perro : public Mascota` |
-| **Agregación** ("tiene") | `Veterinaria` → `Mascota` | `vector<Mascota*> pacientes` |
+| **Agregación** ("tiene") | `Veterinaria` → `Mascota` | `vector<Mascota*> mascotas` |
 
-La agregación es con **punteros**, no por valor, y eso no es un detalle: por ahí entra el polimorfismo.
+La agregación es con **punteros**, no por valor, y eso no es un detalle: por ahí entra el polimorfismo. Con `vector<Mascota>` cada elemento se guardaría cortado y `vacunado()` ejecutaría siempre la versión de la superclase.
 
-| | `vector<Mascota>` | `vector<Mascota*>` |
-|---|---|---|
-| Qué guarda | copias cortadas | la dirección del objeto real |
-| Qué imprime `mostrar()` | siempre la versión de `Mascota` | la del perro o la del gato |
-| Quién libera | nadie (mueren con la veterinaria) | el `main`, que hizo el `new` |
+## Por qué `vacunado()` es virtual
+
+Cada especie tiene su vacuna obligatoria distinta, así que la misma pregunta da respuestas distintas:
+
+| Clase | Qué cuenta como vacunado |
+|---|---|
+| `Mascota` | tener registrada cualquier vacuna |
+| `Gato` | tener la **triple felina** |
+| `Perro` | tener la **antirrábica** |
+
+```cpp
+bool Gato::vacunado() {
+    return vacuna == "triple felina";
+}
+```
+
+En la salida de prueba hay un perro, Lassie, con vacuna de gato: aparece como **NO vacunado** aunque tenga una vacuna registrada. Ese es el caso que demuestra que el `override` está entrando.
+
+`Perro` agrega además `entrenado()`, un método que **no existe** en `Mascota` ni en `Gato`: solo se puede llamar sobre un `Perro`, no sobre un `Mascota*`.
 
 ## Imprimir desde un método de clase
 
-El enunciado pide expresamente que la impresión **no** sea una función externa como en A1:
+El enunciado pide expresamente que la impresión no sea externa:
 
 ```cpp
-void Veterinaria::imprimir_pacientes() const {
-    for (size_t i = 0; i < pacientes.size(); i++) {
-        pacientes[i]->mostrar();      // sigue siendo polimorfico
+void Veterinaria::imprimir() {
+    for (size_t i = 0; i < mascotas.size(); i++) {
+        imprimir_datos(*mascotas[i]);
     }
 }
 ```
 
-La diferencia con A1 es de diseño, no de polimorfismo:
+El vector es un **atributo privado** y nadie de afuera lo toca: la única forma de verlo es pidiéndoselo a la veterinaria. Dentro, `imprimir()` se apoya en la plantilla `imprimir_datos`, que sirve para cualquier tipo que sepa responder `getNombre()`, `getVacuna()` y `vacunado()`.
 
-- en A1 el vector está en el `main` y una función libre lo recorre,
-- aquí el vector es **un atributo privado** y nadie de afuera lo toca; la única forma de verlo es pidiéndoselo a la veterinaria.
-
-Eso es encapsulamiento: la clase que tiene los datos es la que los muestra.
+Las plantillas van **completas en el `.h`**: `imprimir_datos.h` no tiene `.cpp`.
 
 ## Preguntas de la sesión
 
 | Pregunta | Respuesta |
 |---|---|
-| ¿Por qué `registrar()` recibe `Mascota*` y no `Perro*` o `Gato*`? | Para aceptar cualquier mascota presente o futura sin tocar la veterinaria |
+| ¿Por qué `agregar_mascota()` recibe `Mascota*` y no `Perro*` o `Gato*`? | Para aceptar cualquier mascota presente o futura sin tocar la veterinaria |
 | ¿Quién hace el `delete`? | El `main`, que hizo el `new`. La veterinaria solo conoce a sus pacientes |
-| ¿Qué pasaría si la veterinaria hiciera `delete` en su destructor? | Sería composición y el `main` no podría volver a usar esas mascotas |
-| ¿Por qué `imprimir_pacientes()` es `const`? | No modifica la lista: solo la recorre |
-| ¿`especie()` podría ser virtual pura? | Sí, si no quisiéramos que existan mascotas genéricas (ese caso se ve en A4) |
-| ¿Se puede agregar `Loro` sin tocar `Veterinaria`? | Sí: se crea la subclase y se registra. Esa es la prueba de que el diseño está bien |
+| ¿Por qué Lassie sale NO vacunado si tiene vacuna? | Porque `Perro::vacunado()` exige la antirrábica, y tiene la felina |
+| ¿Puedo llamar a `entrenado()` desde el vector? | No: el vector es de `Mascota*` y ese método solo existe en `Perro` |
+| ¿Qué pasa si quito el `virtual` de `vacunado()`? | Todos se evalúan con la regla genérica de `Mascota` |
+| ¿Se puede agregar `Loro` sin tocar `Veterinaria`? | Sí. Esa es la prueba de que el diseño está bien |
 
-## Diagrama de flujo – `retirar(nombre)`
+## Diagrama de flujo – `Veterinaria::imprimir()`
 
 ```mermaid
 flowchart TD
-    A([Inicio]) --> B["i = 0"]
-    B --> C{"i < pacientes.size()?"}
-    C -- Sí --> D{"pacientes[i]->get_nombre() == nombre?"}
-    D -- Sí --> E["pacientes.erase(pacientes.begin() + i)"]
-    E --> F[/"retornar true"/]
-    D -- No --> G["i = i + 1"]
-    G --> C
-    C -- No --> H[/"retornar false"/]
-    F --> I([Fin])
-    H --> I
+    A([Inicio]) --> B[/"imprimir cabecera"/]
+    B --> C["i = 0"]
+    C --> D{"i < mascotas.size()?"}
+    D -- Sí --> E["imprimir_datos(*mascotas[i])"]
+    E --> F["i = i + 1"]
+    F --> D
+    D -- No --> G[/"imprimir total"/]
+    G --> H([Fin])
 ```
 
 ## Ejecución
 
 ```
 === Veterinaria Patitas Felices ===
-1. Perro | Rocky | edad: 3 anios | peso: 18.5 kg | dice: Guau
-    raza: Labrador
-2. Gato | Michi | edad: 2 anios | peso: 4.2 kg | dice: Miau
-    pelo: largo
-...
-Total de pacientes: 5
+1. Rocky | vacuna: antirrabica | vacunado
+2. Michi | vacuna: triple felina | vacunado
+3. Lassie | vacuna: triple felina | NO vacunado
+4. Pelusa | vacuna: ninguna | NO vacunado
+Total de mascotas: 4
 
---- Retirando a Lassie ---
-Lassie fue dada de alta
+--- Metodo propio del perro ---
+Boby esta entrenado
 ```
 
 ## Tareas
 
-- [ ] **1. Clase `Mascota`.** Atributos `protected` `nombre`, `edad` y `peso`, constructores y destructor **virtual**.
-- [ ] **2. `virtual especie()`, `virtual sonido()` y `virtual mostrar()`.** La versión de la superclase imprime los datos comunes.
-- [ ] **3. Clase `Perro`.** Agrega `raza` y sobrescribe las tres con `override`.
-- [ ] **4. Clase `Gato`.** Agrega `pelo_largo` y sobrescribe las tres con `override`.
-- [ ] **5. Clase `Veterinaria`.** Atributos privados `nombre` y `vector<Mascota*> pacientes`.
-- [ ] **6. `registrar(Mascota*)`.** Guarda el puntero con `push_back`. *Pista: valida `nullptr`.*
-- [ ] **7. `imprimir_pacientes()`.** Recorre el vector con `->` y llama a `mostrar()`. **Sin `if` por tipo.**
-- [ ] **8. `retirar(string)`.** Busca por nombre, usa `erase` y devuelve `bool`.
-- [ ] **9. `main`.** Crea las mascotas con `new`, regístralas, imprime, retira una y vuelve a imprimir.
-- [ ] **10. Liberación.** Haz `delete` de cada mascota en el `main`, no en la veterinaria.
-- [ ] **11. Para pensar.** Cambia el atributo a `vector<Mascota>` por valor y explica qué pasa con la salida.
+- [ ] **1. Clase `Mascota`.** Atributos `protected` `nombre` y `vacuna`, constructores y destructor **virtual**.
+- [ ] **2. `getNombre()` y `getVacuna()`**, más `virtual bool vacunado()` con la regla genérica.
+- [ ] **3. Clase `Gato`.** Hereda `public` y sobrescribe `vacunado()` con la triple felina.
+- [ ] **4. Clase `Perro`.** Hereda `public`, sobrescribe `vacunado()` con la antirrábica y agrega `entrenado()`.
+- [ ] **5. Plantilla `imprimir_datos`.** En su propio `.h`, completa, sin `.cpp`.
+- [ ] **6. Clase `Veterinaria`.** Atributos privados `nombre` y `vector<Mascota*> mascotas`.
+- [ ] **7. `agregar_mascota(Mascota*)`.** Guarda el puntero con `push_back`. *Pista: valida `nullptr`.*
+- [ ] **8. `imprimir()`.** Recorre el vector llamando a la plantilla. **Sin `if` por tipo.**
+- [ ] **9. `main`.** Crea las mascotas con `new`, agrégalas a la veterinaria y manda imprimir.
+- [ ] **10. El caso de Lassie.** Dale a un perro una vacuna de gato y explica por qué sale como no vacunado.
+- [ ] **11. `entrenado()`.** Llámalo sobre un `Perro` y luego intenta llamarlo desde el vector. ¿Qué dice el compilador?
+- [ ] **12. Liberación.** `delete` de cada mascota en el `main`, no en la veterinaria.

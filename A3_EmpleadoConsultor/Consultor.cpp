@@ -1,51 +1,38 @@
 #include "Consultor.h"
-#include <iostream>
-#include <iomanip>
 
 using namespace std;
 
 Consultor::Consultor() {
-    this->tiene_salario_fijo = false;
-    this->salario_fijo = 0.0;
-    this->especialidad = "general";
+    this->es_pagado = false;
+    this->fijo = 0.0;
 }
 
-Consultor::Consultor(const string& codigo, const string& nombre,
-                     double horas, double salario_por_hora,
-                     const string& especialidad)
-        : Empleado(codigo, nombre, horas, salario_por_hora) {
-    this->tiene_salario_fijo = false;
-    this->salario_fijo = 0.0;
-    this->especialidad = especialidad;
+// Consultor sin salario fijo: cobra por hora, como cualquier empleado.
+Consultor::Consultor(const string& nombre, double sph) : Empleado(nombre, sph) {
+    this->es_pagado = false;
+    this->fijo = 0.0;
 }
 
-Consultor::Consultor(const string& codigo, const string& nombre,
-                     double horas, double salario_por_hora,
-                     const string& especialidad, double salario_fijo)
-        : Empleado(codigo, nombre, horas, salario_por_hora) {
-    this->tiene_salario_fijo = true;
-    this->salario_fijo = salario_fijo;
-    this->especialidad = especialidad;
+// Consultor con salario fijo: cobra el monto pactado.
+Consultor::Consultor(const string& nombre, double sph, double fijo)
+        : Empleado(nombre, sph) {
+    this->es_pagado = true;
+    this->fijo = fijo;
 }
 
-bool Consultor::get_tiene_salario_fijo() const {
-    return tiene_salario_fijo;
+bool Consultor::getEsPagado() {
+    return es_pagado;
 }
 
-string Consultor::tipo() const {
-    return "Consultor";
+void Consultor::cambiar(bool es_pagado, double fijo) {
+    this->es_pagado = es_pagado;
+    this->fijo = fijo;
 }
 
 // Si tiene salario fijo cobra ese monto; si no, se calcula como el de cualquier empleado.
-double Consultor::salario() const {
-    if (tiene_salario_fijo) {
-        return salario_fijo;
+double Consultor::salario(double horas) {
+    if (es_pagado) {
+        return fijo;
     }
-    return Empleado::salario();
-}
-
-void Consultor::mostrar() const {
-    Empleado::mostrar();
-    cout << "          especialidad: " << especialidad
-         << " | salario fijo: " << (tiene_salario_fijo ? "si" : "no") << endl;
+    return Empleado::salario(horas);
 }
