@@ -33,12 +33,14 @@ La conversión ocurre al **asignar**, no al dividir. Si los dos operandos son en
 
 ## Los cuatro casts con nombre
 
-| Operador | Para qué | En el ejemplo |
-|---|---|---|
-| `static_cast` | conversiones normales entre tipos relacionados | `static_cast<entero>(19.99)` |
-| `const_cast` | quitar (o poner) `const` | leer un `const int` por un puntero no const |
-| `reinterpret_cast` | leer los mismos bytes como otro tipo | el primer byte de `65` como `'A'` |
-| `dynamic_cast` | preguntar en ejecución de qué clase es un objeto | no se usa aquí: exige una clase polimórfica |
+Son los que nombra la diapositiva 14, en lugar del casting estilo C:
+
+| Operador | Para qué |
+|---|---|
+| `static_cast` | conversiones normales entre tipos relacionados |
+| `const_cast` | quitar (o poner) `const` |
+| `reinterpret_cast` | leer los mismos bytes como otro tipo |
+| `dynamic_cast` | preguntar en ejecución de qué clase es un objeto |
 
 Los cuatro hacen lo que el casting estilo C `(tipo)valor` hacía de un solo golpe. La diferencia es que **se ven**: buscar `static_cast` en el código encuentra todas las conversiones, buscar `(int)` no.
 
@@ -58,25 +60,17 @@ Los cuatro hacen lo que el casting estilo C `(tipo)valor` hacía de un solo golp
 ## Ejecución
 
 ```
---- 1. Conversion implicita y explicita ---
-entero a = 9.99    -> 9
-Velocidad          -> 65
-(entero) 3.1415    -> 3
-
---- 2. La escalera de promocion ---
-codigo / 2         -> 32  (division entera)
-codigo / 2.0f      -> 32.5
-
---- 5. reinterpret_cast ---
-primer byte de 65 como caracter -> A
+real b = 6      -> 6
+entero a = 9.99 -> 9
+Velocidad 65
+(entero) 3.1415 -> 3
 ```
 
 ## Tareas
 
 - [ ] **1. `tipos.h`.** Los `using` de `entero`, `real` y `caracter`.
 - [ ] **2. Conversión implícita.** Asigna un entero a un real, un real con decimales a un entero y un `double` a un `long int`. Imprime cada resultado.
-- [ ] **3. División entera.** Comprueba la diferencia entre `codigo / 2` y `codigo / 2.0f`.
-- [ ] **4. `static_cast`.** Reescribe el casting estilo C `(entero) 3.1415` usando `static_cast`.
-- [ ] **5. `const_cast`.** Toma la dirección de un `const int` y léela por un puntero no `const`.
-- [ ] **6. `reinterpret_cast`.** Mira el primer byte de un `int` como `char`. *Pista: con 65 sale `'A'`.*
-- [ ] **7. Para pensar.** ¿Por qué `dynamic_cast` no se puede probar con los tipos de este ejercicio? *Pista: mira qué exige de la clase.*
+- [ ] **3. Conversión explícita.** Convierte `3.1415` a entero con el casting estilo C `(entero)`.
+- [ ] **4. Reescríbelo con `static_cast`.** Misma conversión, con el operador con nombre.
+- [ ] **5. División entera.** Comprueba qué imprime `codigo / 2` y qué imprime `codigo / 2.0f` cuando `codigo` es 65.
+- [ ] **6. Para pensar.** ¿En qué momento ocurre la conversión en `real mitad = codigo / 2;`: al dividir o al asignar?
